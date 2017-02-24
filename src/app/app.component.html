@@ -1,3 +1,42 @@
-<h1>
-  {{title}}
-</h1>
+<img src="assets/nrs.png" id="logo-img">
+<div id="container container-fluid">
+  <div class="row">
+    <div class="col-xs-12"></div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12">
+      <sebm-google-map [latitude]="35.84939668"
+                       [longitude]="-78.88233206">
+        <sebm-google-map-marker *ngFor="let car of cars | carFilter:carFilterString"
+                                [latitude]="car.lat"
+                                [longitude]="car.lon"
+                                [title]="car.carNumber"
+                                [openInfoWindow]="true">
+          <sebm-google-map-info-window>
+            Car Number: {{car.carNumber}}<br>
+            Speed: {{car.speed}}<br>
+            Last Updated: {{car.createdAt}}
+          </sebm-google-map-info-window>
+        </sebm-google-map-marker>
+      </sebm-google-map>
+    </div>
+  </div>
+  &nbsp;
+  <div class="row">
+    <div class="col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1">
+      <button class="btn btn-primary" [class.active]="isPolling" (click)="(isPolling) ? stopPolling() : startPolling()">
+        Auto Update
+      </button>
+      <form>
+        <div class="form-group">
+          <label for="car-filter" class="control-label">Filter</label>
+          <input type="text" [(ngModel)]="carFilterString" id="car-filter" class="form-control" name="carFilterString"
+                 autocomplete="off">
+        </div>
+      </form>
+      <ul id="car-list" class="list-group">
+        <li *ngFor="let car of cars | carFilter:carFilterString" class="list-group-item">{{car.carNumber}}</li>
+      </ul>
+    </div>
+  </div>
+</div>
