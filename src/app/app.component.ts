@@ -13,6 +13,8 @@ export class AppComponent implements OnInit {
   carFilterString: string = '';
   getCarInterval: any;
   isPolling: boolean = false;
+  mapLat: number = 34.6017938;
+  mapLon: number = -80.0297092;
 
   constructor(private http: Http) {
   }
@@ -59,16 +61,15 @@ export class AppComponent implements OnInit {
 
   processCars(newCars) {
     this.cars
-      .forEach(car => {
+      .forEach((car, index: number) => {
         let thisCar = newCars[car.id];
         if (thisCar) {
           car.accuracy = thisCar.Accuracy;
           car.carNumber = thisCar.CarNumber;
-          car.createdAt = thisCar.CreatedAtZulu;
-          car.createdAtTimeZone = thisCar.CreatedAtTimeZone;
+          car.createdAt = thisCar.CreatedAtLocal;
           car.lat = Number(thisCar.Lat);
           car.lon = Number(thisCar.Lon);
-          car.speed = Number(thisCar.Speed);
+          car.speed = Number(thisCar.SpeedMPH);
 
           delete newCars[car.id];
         }
@@ -81,12 +82,49 @@ export class AppComponent implements OnInit {
           id: key,
           accuracy: newCars[key].Accuracy,
           carNumber: newCars[key].CarNumber,
-          createdAtTimeZone: newCars[key].CreatedAtTimeZone,
-          createdAt: newCars[key].CreatedAtZulu,
+          createdAt: newCars[key].CreatedAtLocal,
           lat: Number(newCars[key].Lat),
           lon: Number(newCars[key].Lon),
-          speed: newCars[key].Speed
+          speed: newCars[key].SpeedMPH
         });
+      });
+
+    this.centerOnCar();
+  }
+
+  clickFilter(car) {
+    this.carFilterString = car.carNumber;
+
+    if (car.lat && car.lon) {
+      this.mapLat = car.lat;
+      this.mapLon = car.lon;
+    }
+  }
+
+  isActive(carNumber) {
+    if ((!carNumber) || (!this.carFilterString)) return false;
+    return carNumber.toLowerCase() === this.carFilterString.toLowerCase();
+  }
+
+  clearFilter() {
+    this.carFilterString = '';
+  }
+
+  onlyCourseCars() {
+    this.carFilterString = 'coursecars';
+  }
+
+  centerOnCar() {
+    if (!this.carFilterString) return false;
+
+    this.cars
+      .forEach((car) => {
+        if (car.carNumber.toLowerCase() === this.carFilterString.toLowerCase()) {
+          if (car.lat && car.lon) {
+            this.mapLat = car.lat;
+            this.mapLon = car.lon;
+          }
+        }
       });
   }
 }

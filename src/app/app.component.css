@@ -1,8 +1,19 @@
 .sebm-google-map-container {
-  height: 300px;
+  height: 66vh;
 }
 
 #logo-img {
   width: 350px;
   height: auto;
+}
+
+a.list-group-item:hover {
+  cursor: pointer;
+}
+
+.clearer {
+  color: #000;
+  cursor: pointer;
+  z-index: 1;
+  pointer-events: all;
 }

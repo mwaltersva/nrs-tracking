@@ -17,7 +17,7 @@ import { CarFilterPipe } from './car-filter.pipe';
     FormsModule,
     HttpModule,
     AgmCoreModule.forRoot({
-      apiKey: ''
+      apiKey: 'AIzaSyCDwnOJEdZ_i1wPMedZM3rmabuZ45SsqSQ'
     })
   ],
   providers: [],
