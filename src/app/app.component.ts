@@ -1,6 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {Http} from '@angular/http';
 import {Observable} from 'rxjs';
+import * as moment from 'moment';
+
+const zeroCars = /#0[0-9]{0,3}|#00[0-9]{0,3}|#000[0-9]{0,3}|#combo[0-9]{0,3}/i;
+const sweepCars = /#sweep[0-9]{0,3}/i;
+const stewardCars = /#steward.*/i;
+const radioCars = /#radio.*/i;
+const compCars = /#[0-9]{1,4}/i;
 
 @Component({
   selector: 'app-root',
@@ -69,7 +76,8 @@ export class AppComponent implements OnInit {
           car.createdAt = thisCar.CreatedAtLocal;
           car.lat = Number(thisCar.Lat);
           car.lon = Number(thisCar.Lon);
-          car.speed = Number(thisCar.SpeedMPH);
+          car.speed = Number(thisCar.SpeedMPH).toFixed(1);
+          [car.iconUrl, car.opacity] = this.calculateIconUrl(car);
 
           delete newCars[car.id];
         }
@@ -78,15 +86,25 @@ export class AppComponent implements OnInit {
     Object
       .keys(newCars)
       .forEach(key => {
-        this.cars.push({
+        let car: any = {
           id: key,
           accuracy: newCars[key].Accuracy,
           carNumber: newCars[key].CarNumber,
           createdAt: newCars[key].CreatedAtLocal,
           lat: Number(newCars[key].Lat),
           lon: Number(newCars[key].Lon),
-          speed: newCars[key].SpeedMPH
-        });
+          speed: Number(newCars[key].SpeedMPH).toFixed(1)
+        };
+
+        [car.iconUrl, car.opacity] = this.calculateIconUrl(car);
+        this.cars.push(car);
+      });
+
+    this.cars
+      .sort((a, b) => {
+        if (a.carNumber > b.carNumber) return 1;
+        if (a.carNumber < b.carNumber) return -1;
+        return 0
       });
 
     this.centerOnCar();
@@ -126,5 +144,49 @@ export class AppComponent implements OnInit {
           }
         }
       });
+  }
+
+  calculateIconUrl(car) {
+    let iconUrl: string;
+    let opacity: number;
+
+    let zero: string = 'http://maps.google.com/mapfiles/marker.png';
+    let sweep: string = 'http://maps.google.com/mapfiles/marker_orange.png';
+    let comp: string = 'http://maps.google.com/mapfiles/marker_purple.png';
+    let stewards: string = 'http://maps.google.com/mapfiles/marker_white.png';
+    let radios: string = 'http://maps.google.com/mapfiles/marker_black.png';
+    let def: string = 'http://maps.google.com/mapfiles/marker_green.png';
+
+    if (!car.carNumber) {
+      iconUrl = def;
+    } else if (car.carNumber.match(zeroCars)) {
+      iconUrl = zero;
+    } else if (car.carNumber.match(sweepCars)) {
+      iconUrl = sweep;
+    } else if (car.carNumber.match(stewardCars)) {
+      iconUrl = stewards;
+    } else if (car.carNumber.match(radioCars)) {
+      iconUrl = radios;
+    } else if (car.carNumber.match(compCars)) {
+      iconUrl = comp;
+    } else {
+      iconUrl = def;
+    }
+
+    let luMoment = moment(car.createdAt);
+    let nowMoment = moment(new Date());
+    let minutesDiff = nowMoment.diff(luMoment, 'minutes');
+
+    if (minutesDiff < 5) {
+      opacity = 1;
+    } else if (minutesDiff >= 5 && minutesDiff < 10) {
+      opacity = 0.75;
+    } else if (minutesDiff >= 10 && minutesDiff < 30) {
+      opacity = 0.5;
+    } else {
+      opacity = 0.25;
+    }
+
+    return [iconUrl, opacity];
   }
 }

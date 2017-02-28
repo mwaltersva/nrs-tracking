@@ -12,11 +12,13 @@
                                 [latitude]="car.lat"
                                 [longitude]="car.lon"
                                 [title]="car.carNumber"
-                                [openInfoWindow]="true">
-          <sebm-google-map-info-window>
-            Car Number: {{car.carNumber}}<br>
-            Speed: {{car.speed}}<br>
-            Last Updated: {{car.createdAt}}
+                                [openInfoWindow]="true"
+                                [iconUrl]="car.iconUrl"
+                                [opacity]="car.opacity">
+          <sebm-google-map-info-window class="car-card">
+            <strong>Car Number:</strong> {{car.carNumber}}<br>
+            <strong>Speed:</strong> {{car.speed}}<br>
+            <strong>Last Updated:</strong> {{car.createdAt}}
           </sebm-google-map-info-window>
         </sebm-google-map-marker>
       </sebm-google-map>
@@ -24,17 +26,13 @@
   </div>
   &nbsp;
   <div class="row">
-    <div class="col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1">
+    <div class="col-xs-10 col-xs-offset-1 col-sm-offset-1 col-sm-5">
       <button class="btn btn-primary" [class.active]="isPolling" (click)="(isPolling) ? stopPolling() : startPolling()">
         Auto Update: {{isPolling ? 'On' : 'Off'}}
       </button>
       <button class="btn btn-primary" [class.active]="carFilterString === 'coursecars'" (click)="onlyCourseCars()">
         Course Cars Only
       </button>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1">
       <form>
         <div class="form-group has-feedback">
           <label for="car-filter" class="control-label">Filter</label>
@@ -50,9 +48,20 @@
            *ngFor="let car of cars | carFilter:carFilterString"
            [class.active]="isActive(car.carNumber)"
            (click)="clickFilter(car)">
-          {{car.carNumber}}
+          <strong>{{car.carNumber}}</strong>
         </a>
       </div>
+    </div>
+    <div class="col-xs-10 col-xs-offset-1 col-sm-offset-0 col-sm-5">
+      <h3>Legend</h3>
+      <ul class="list-group">
+        <li class="list-group-item"><img src="http://maps.google.com/mapfiles/marker.png"> Zero Car</li>
+        <li class="list-group-item"><img src="http://maps.google.com/mapfiles/marker_orange.png"> Sweep Cars</li>
+        <li class="list-group-item"><img src="http://maps.google.com/mapfiles/marker_white.png"> Stewards</li>
+        <li class="list-group-item"><img src="http://maps.google.com/mapfiles/marker_black.png"> Radios</li>
+        <li class="list-group-item"><img src="http://maps.google.com/mapfiles/marker_purple.png"> Competitors</li>
+        <li class="list-group-item"><img src="http://maps.google.com/mapfiles/marker_green.png"> Other</li>
+      </ul>
     </div>
   </div>
 </div>
