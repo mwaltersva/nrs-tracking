@@ -156,6 +156,7 @@ export class AppComponent implements OnInit {
     let stewards: string = 'http://maps.google.com/mapfiles/marker_white.png';
     let radios: string = 'http://maps.google.com/mapfiles/marker_black.png';
     let def: string = 'http://maps.google.com/mapfiles/marker_green.png';
+    let cowboy: string = 'http://tracking.nasarallysport.com/assets/cb-white.png';
 
     if (!car.carNumber) {
       iconUrl = def;
@@ -169,6 +170,8 @@ export class AppComponent implements OnInit {
       iconUrl = radios;
     } else if (car.carNumber.match(compCars)) {
       iconUrl = comp;
+    } else if (car.carNumber.match(/#.*cowboy.*/i)) {
+      iconUrl = cowboy;
     } else {
       iconUrl = def;
     }
@@ -180,11 +183,11 @@ export class AppComponent implements OnInit {
     if (minutesDiff < 5) {
       opacity = 1;
     } else if (minutesDiff >= 5 && minutesDiff < 10) {
-      opacity = 0.75;
+      opacity = 0.90;
     } else if (minutesDiff >= 10 && minutesDiff < 30) {
-      opacity = 0.5;
+      opacity = 0.75;
     } else {
-      opacity = 0.25;
+      opacity = 0.5;
     }
 
     return [iconUrl, opacity];
